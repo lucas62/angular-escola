@@ -1,8 +1,20 @@
 <h1>Disciplinas</h1>
 <hr>
-<ul>
-  <li *ngFor="let disciplina of disciplinas" (click)="selecionar(disciplina)">
-      <p [class.selecionado]="selecionado == disciplina">{{disciplina.nome}}</p>
-      <p *ngIf="selecionado == disciplina">{{disciplina.descricao}}</p>
-  </li>
-</ul>
+<table class="table table-striped" border="1">
+    <tr>
+      <th>Código</th>
+      <th>Nome</th>
+    </tr>
+    <tr *ngFor="let disciplina of disciplinas" (click)="selecionar(disciplina)" >
+      <td>{{disciplina.cod}}</td>
+      <td>{{disciplina.nome}}</td>
+      <td>
+        <button type="button" >Detalhes</button>
+      </td>
+    </tr>
+</table>
+<table *ngFor="let disciplina of disciplinas" (click)="selecionar2()">
+  <button type="button" *ngIf="selecionado ==  disciplina" >Fechar</button>
+  <h3 *ngIf="selecionado == disciplina">{{disciplina.professor.nome}} </h3>
+  <p *ngIf="selecionado == disciplina">{{disciplina.descricao}}</p>
+</table>
