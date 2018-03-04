@@ -1,8 +1,27 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <h1>Disciplinas</h1>
 <hr>
-<ul>
-  <li *ngFor="let disciplina of disciplinas" (click)="selecionar(disciplina)">
-      <p [class.selecionado]="selecionado == disciplina">{{disciplina.nome}}</p>
-      <p *ngIf="selecionado == disciplina">{{disciplina.descricao}}</p>
-  </li>
-</ul>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Código</th>
+      <th>Nome</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let disciplina of disciplinas" (click)="selecionar(disciplina)" >
+      <td>{{disciplina.cod}}</td>
+      <td>{{disciplina.nome}}</td>
+      <td>
+        <button type="button" >Detalhes</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<div *ngFor="let disciplina of disciplinas" (click)="selecionar2()" >
+  <div *ngIf="selecionado ==  disciplina">
+    <button type="button"  >Ocultar</button>
+    <p><strong>Professor: </strong>{{disciplina.professor.nome}}</p>
+    <p><strong>Descrição: </strong>{{disciplina.descricao}}</p>
+  </div>
+</div>
