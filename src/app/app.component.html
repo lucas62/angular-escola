@@ -1,125 +1,77 @@
-<div class="container">
-    <div class="row">
-        <div class="col-sm-6"><h1>Disciplinas</h1></div>
-        <div class="col-sm-6 text-right"><button class="btn btn-success" (click)="visualizar(true)" >
-            <i class="fa fa-plus-square"></i> Novo</button>
-        </div>
+<h1>Ocorrências</h1>
+<hr>
+<ul>
+  <li *ngFor="let ocorrencia of ocorrencias">
+    {{ ocorrencia.data}} - {{ocorrencia.aluno_matricula}} - {{ocorrencia.aluno_nome}} - {{tipos[ocorrencia.tipo].nome}}
+  </li>
+</ul>
+
+<h2>Estatísticas</h2>
+<ul>
+  <li *ngFor="let tipo of tipos">
+    Tipo: {{tipo.nome}} : {{porcentagens[tipo.id]}} %
+  </li>
+  <li>Total abril: {{cont_abril}}</li>
+  <li>Total março: {{cont_marco}}</li>
+  <li *ngIf = "verde == null" >Relação abril-março: {{relacao_ocorrencias}} %</li>
+  <li *ngIf = "verde" class = "text-sucess" >Relação abril-março: + {{relacao_ocorrencias}} %</li>
+  <li *ngIf = "verde == false" class = "text-sucess" >Relação abril-março: {{relacao_ocorrencias}} %</li>
+</ul>
+
+<!--<h2>Estatísticas por Data</h2>
+<ul>
+    <div (submit)="dataDe" >
+        <label for="dataDe">De:</label>
+        <input type="date" id="dataDe" name="dataDe" [(ngModel)]="dataDe" required>
     </div>
-    
-    <hr>
-    <div *ngIf="excluir_ok" class="alert alert-success">
-        <strong>Sucesso!</strong> A disciplina foi excluída com sucesso.
+    <div (submit)="dataAte" >
+        <label for="dataAte">Até:</label>
+        <input type="date" id="dataAte" name="dataAte" [(ngModel)]="dataAte" required>
     </div>
-    <table class="table table-hover table">
-        <thead class="thead-light ">
-        <tr>
-            <th width="100">Código</th>
-            <th>Disciplina</th>
-            <th width="200">Ações</th>
-        </tr>
-        </thead>
-        <tbody >
-        <tr *ngFor="let disciplina of disciplinas"
-            [class.table-active]="editando == disciplina">
-            <td>
-                <i *ngIf="editando == disciplina" class="fa fa-pencil-square"></i> 
-                {{disciplina.codigo}}
-            </td>
-            <td>
-                {{disciplina.nome}}
-            </td>
-            <td>
-                <button class="btn btn-sm btn-danger"
-                        (click)="excluir(disciplina)">
-                    <i class="fa fa-trash"></i> Excluir
-                </button>
-                <button class="btn btn-sm btn-warning"
-                        (click)="editar(disciplina)">
-                    <i class="fa fa-pencil-square"></i> Editar
-                </button>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <div *ngIf="salvar_ok || editar_ok" class="alert alert-success">
-            <strong>Sucesso!</strong> A disciplina foi cadastrada ou atualizada
-            com sucesso.
-    </div>
-    <div *ngIf="visualizado || editando != disciplina">
-        <h2>Cadastrar</h2>
-        <p>Use este formulário para cadastrar ou editar uma disciplina.</p>
-        <div *ngIf="salvar_ok || editar_ok" class="alert alert-success">
-            <strong>Sucesso!</strong> A disciplina foi cadastrada ou atualizada
-            com sucesso.
-        </div>
-        <form #cadastro="ngForm" (submit)="salvar()">
-            <div class="form-group">
-                <label for="codigo">Código</label><br>
-                <input type="number" id="codigo" name="codigo" class="form-control"
-                    [(ngModel)]="codigo"
-                    required>
-            </div>
-            <div class="form-group">
-                <label for="nome">Nome</label><br>
-                <input type="text" id="nome" name="nome" class="form-control"
-                    [(ngModel)]="nome"
-                    required>
-            </div>
-            <div class="form-group">
-                <label for="descricao">Descrição</label><br>
-                <textarea id="descricao" name="descricao" class="form-control"
-                        [(ngModel)]="descricao"
-                        cols="70" rows="5"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="nome">Data</label><br>
-                <input type="date" id="data" name="data" class="form-control"
-                    [(ngModel)]="data">
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" name="ativa" type="checkbox" id="ativa" [(ngModel)]="ativa">
-                <label class="form-check-label" for="ativa">
-                  Está ativa?
-                </label>
-            </div>
-            <fieldset>
-                <legend>Tipo</legend>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="principal" id="principal" value="principal"  [(ngModel)]="tipo" checked>
-                    <label class="form-check-label" for="principal">
-                      Principal
-                    </label>
-                  </div>
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="secundaria" id="secundaria" value="secundaria" [(ngModel)]="tipo">
-                    <label class="form-check-label" for="secundaria">
-                      Secundária
-                    </label>
-                  </div>
-            </fieldset>
-            <div class="form-group">
-                <label for="periodo">Período</label>
-                <select class="form-control" id="periodo" name="periodo" [(ngModel)]="periodo">
-                    <option value = "">Selecione um período </option>
-                    <option value = "1">1 período</option>
-                    <option value = "2">2 período</option>
-                    <option value = "3">3 período</option>
-                    <option value = "4">4 período</option>
-                    <option value = "5">5 período</option>
-                    <option value = "6">6 período</option>
-                    <option value = "7">7 período</option>
-                    <option value = "8">8 período</option>
-                </select>
-              </div>
-            <div class="text-right">
-                <button type="submit" class="btn btn-primary"
-                        [disabled]="!cadastro.valid">
-                    <i class="fa fa-save"></i> Salvar
-                </button>
-                <button type="reset" class="btn btn-secondary" (click)="cancelar()">
-                    Cancelar
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+    <li *ngFor="let tipo of tipos">
+        Tipo: {{tipo.nome}} : {{contadoresData[tipo.id]}}
+    </li>
+</ul> -->
+
+<h2>Cadastrar</h2>
+<p>Use este formulário para cadastrar ocorrência.</p>
+<form #cadastro="ngForm" (submit)="salvar()">
+  <div *ngIf="salvar_ok">
+    Dados salvos com sucesso!
+  </div>
+  <div>
+    <label for="aluno_matricula">Matrícula do aluno</label>
+    <input type="text" id="aluno_matricula" name="aluno_matricula" [(ngModel)]="aluno_matricula" required>
+  </div>
+  <div>
+    <label for="aluno_nome">Nome do aluno</label>
+    <input type="text" id="aluno_nome" name="aluno_nome" [(ngModel)]="aluno_nome" required />
+  </div>
+  <div>
+    <label for="data">Data</label>
+    <input type="date" id="data" name="data" [(ngModel)]="data" required>
+  </div>
+  <div>
+    <label><input type="checkbox" id="pai_ou_responsavel_compareceu" name="pai_ou_responsavel_compareceu"
+                  [(ngModel)]="pai_ou_responsavel_compareceu">
+      Pai ou responsável compareceu à reunião
+    </label>
+  </div>
+  <div *ngIf="pai_ou_responsavel_compareceu">
+    <label for="pai_ou_responsavel_nome">Nome do pai ou responsável</label>
+    <input type="text" id="pai_ou_responsavel_nome" name="pai_ou_responsavel_nome"
+           [(ngModel)]="pai_ou_responsavel_nome">
+  </div>
+  <div>
+    <label for="tipo">Tipo da ocorrência</label>
+    <select id="tipo" name="tipo" [(ngModel)]="tipo" required>
+      <option *ngFor="let t of tipos" [value]="t.id">{{t.nome}}</option>
+    </select>
+  </div>
+  <div>
+    <label for="observacao">Observação</label>
+    <textarea id="observacao" name="observacao" [(ngModel)]="observacao"></textarea>
+  </div>
+  <button type="submit" [disabled]="!cadastro.valid">Salvar</button>
+  <button type="reset" (click)="cancelar()">Cancelar</button>
+</form>

@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {Disciplina} from './disciplina.model';
-import { discardPeriodicTasks } from '@angular/core/testing';
+import {TipoDeOcorrencia} from "./tipo-de-ocorrencia.model";
+import {Ocorrencia} from "./ocorrencia.model";
 
 @Component({
   selector: 'app-root',
@@ -8,145 +9,109 @@ import { discardPeriodicTasks } from '@angular/core/testing';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  visualizado = false;
-  editando = null;
-  codigo = null;
-  nome = null;
-  descricao = null;
+  ocorrencias = [];
+  aluno_matricula = null;
+  aluno_nome = null;
   data = null;
-  ativa = null;
-  tipo = 'principal';
-  periodo = null;
-  excluir_ok = false;
-  editar_ok = false;
+  pai_ou_responsavel_compareceu = false;
+  pai_ou_responsavel_nome = null;
+  tipo = null;
+  observacao = null;
   salvar_ok = false;
-  disciplinas = [
-    new Disciplina(1,'Língua Portuguesa', 'O objetivo norteador da BNCC de ' +
-      'Língua Portuguesa é garantir a todos os alunos o acesso aos saberes ' +
-      'linguísticos necessários para a participação social e o exercício da ' +
-      'cidadania, pois é por meio da língua que o ser ' +
-      'humano pensa, comunica-se, tem acesso à informação, expressa e ' +
-      'defende pontos de vista, partilha ou constrói visões de mundo e ' +
-      'produz conhecimento.'),
-    new Disciplina(2,'Educação Física', 'A Educação Física é o componente ' +
-      'curricular que tematiza as práticas corporais em suas diversas formas ' +
-      'de codificação e significação social, entendidas como manifestações ' +
-      'das possibilidades expressivas dos sujeitos e patrimônio cultural ' +
-      'da humanidade. Nessa concepção, o movimento humano está sempre ' +
-      'inserido no âmbito da cultura e não se limita a ' +
-      'um deslocamento espaço-temporal de um segmento corporal ' +
-      'ou de um corpo todo. Logo, as práticas corporais são textos culturais ' +
-      'passíveis de leitura e produção.'),
-    new Disciplina(3, 'Inglês', 'Aprender a língua inglesa propicia a criação ' +
-      'de novas formas de engajamento e participação dos alunos em um mundo ' +
-      'social cada vez mais globalizado e plural, em que as fronteiras ' +
-      'entre países e interesses pessoais, locais, regionais, nacionais ' +
-      'e transnacionais estão cada vez mais difusas e contraditórias. ' +
-      'Assim, o estudo da língua inglesa possibilita aos alunos ampliar ' +
-      'horizontes de comunicação e de intercâmbio cultural, científico ' +
-      'e acadêmico e, nesse sentido, abre novos percursos de acesso, ' +
-      'construção de conhecimentos e participação social. É esse caráter ' +
-      'formativo que inscreve a aprendizagem de inglês em uma perspectiva ' +
-      'de educação linguística, consciente e crítica, na qual as dimensões ' +
-      'pedagógicas e políticas são intrinsecamente ligadas.'),
-    new Disciplina(4, 'Matemática', 'No Ensino Fundamental, essa área, por ' +
-      'meio da articulação de seus diversos campos – Aritmética, Álgebra, ' +
-      'Geometria, Estatística e Probabilidade – precisa garantir que os ' +
-      'alunos relacionem observações empíricas do mundo real a ' +
-      'representações (tabelas, figuras e esquemas) e associem essas ' +
-      'representações a uma atividade matemática, conceitos e ' +
-      'propriedades, fazendo induções e conjecturas. Assim, espera-se ' +
-      'que eles desenvolvam a capacidade de identificar oportunidades ' +
-      'de utilização da matemática para resolver problemas, aplicando ' +
-      'conceitos, procedimentos e resultados para obter soluções e ' +
-      'interpretá-las segundo os contextos das situações. A dedução de ' +
-      'algumas propriedades e a verificação de conjecturas, a partir ' +
-      'de outras, podem ser estimuladas, sobretudo ao final do ' +
-      'Ensino Fundamental.'),
-    new Disciplina(5, 'Ciências', 'Ao estudar Ciências, as pessoas aprendem ' +
-      'a respeito de si mesmas, da diversidade e dos processos de evolução ' +
-      'e manutenção da vida, do mundo material – com os seus recursos ' +
-      'naturais, suas transformações e fontes de energia –, do nosso ' +
-      'planeta no Sistema Solar e no Universo e da aplicação dos ' +
-      'conhecimentos científicos nas várias esferas da vida humana. ' +
-      'Essas aprendizagens, entre outras, possibilitam que os alunos ' +
-      'compreendam, expliquem e intervenham no mundo em que vivem.')
+  dataDe : Date;
+  dataAte : Date;
+  cont_dataD = 0;
+  cont_dataA = 0;
+
+  contadoresData = [0,0,0,0];
+  contadores = [0, 0, 0, 0];
+  porcentagens = [0, 0, 0, 0];
+  cont_abril = 0;
+  cont_marco = 0;
+  relacao_ocorrencias = 0;
+  verde = null;
+
+  tipos = [
+    new TipoDeOcorrencia(0, 'indisciplina em sala de aula'),
+    new TipoDeOcorrencia(1, 'comportamento inadequado com colegas'),
+    new TipoDeOcorrencia(2, 'baixo índice de rendimento'),
+    new TipoDeOcorrencia(3, 'indicação de atenção por assunto familiar, psicológico ou social')
   ];
 
-  visualizar() {
-    this.redefinir();
-    this.visualizado = true;
-  }
-
   salvar() {
-    const situacao = this.ativa;
-    if (this.editando) {
-      this.editando.codigo = this.codigo;
-      this.editando.nome = this.nome;
-      this.editando.descricao = this.descricao;
-      this.editando.data = this.data;
-      this.editando.ativa = situacao;
-      this.editando.tipo = this.tipo;
-      this.editando.periodo = this.periodo;
-      this.editar_ok = true;
-    } else {
-      const d = new Disciplina(this.codigo,this.nome, this.descricao, this.data, situacao, this.periodo);
-      this.disciplinas.push(d);
-      this.redefinir();
-      this.salvar_ok = true;
-    }
-    this.codigo = null;
-    this.nome = null;
-    this.descricao = null;
-    this.data = null;
-    this.ativa = null;
-    this.tipo = 'principal';
-    this.periodo = null;
-    this.editando = null;
+    const ocorrencia = new Ocorrencia(this.aluno_matricula,
+      this.aluno_nome,
+      this.data,
+      this.pai_ou_responsavel_compareceu,
+      this.pai_ou_responsavel_nome,
+      this.observacao,
+      this.tipo);
+    this.ocorrencias.push(ocorrencia);
+    this.salvar_ok = true;
+    this.atualizarEstatisticas();
+    this.iniciar();
   }
 
-  excluir(disciplina) {
-    if (this.editando == disciplina) {
-      alert('Você não pode excluir uma disciplina que está editando');
-    } else {
-      if (confirm('Tem certeza que deseja excluir a disciplina "'
-          + disciplina.nome + '"?')) {
-        const i = this.disciplinas.indexOf(disciplina);
-        this.disciplinas.splice(i, 1);
-        this.redefinir();
-        this.excluir_ok = true;
+
+  atualizarEstatisticas() {
+    this.contadores = [0, 0, 0, 0];
+    this.cont_abril = 0;
+    this.cont_marco = 0;
+    this.verde = null;
+    for (var i = 0; i < this.ocorrencias.length; i++) {
+      this.contadores[this.ocorrencias[i].tipo]++;
+      if (this.ocorrencias[i].data.indexOf("-04-") != -1) {
+        this.cont_abril++;
+      }
+      if (this.ocorrencias[i].data.indexOf('-03-') != -1) {
+        this.cont_marco++;
+      }
+    }
+    if (this.cont_marco != 0) {
+      this.relacao_ocorrencias = (this.cont_abril - this.cont_marco)/this.cont_marco * 100;
+      if (this.relacao_ocorrencias >= 0){
+        this.verde = true;
+      }
+      else{
+        this.verde = false;
+      }
+    }
+    for (var i = 0; i < 4; i++) {
+      this.porcentagens[i] = this.contadores[i] / this.ocorrencias.length * 100;
+    }
+  }
+
+  estatisticaPorData(){
+    this.contadoresData = [0, 0, 0, 0];
+    this.contadoresData[this.ocorrencias[d].tipo]++;
+    for (var i = this.dataDe.getDay(); i <= 31; i++){
+      for (var d = 0; d < this.ocorrencias.length; d++) {
+        if (this.ocorrencias[d].data.indexOf('-'+this.dataDe.getMonth()+'-') != -1 && this.ocorrencias[d].data.indexOf('-'+i+'-') != -1 ) {
+          this.cont_dataD++;
+        }
+      }
+    }
+    for (var i = this.dataAte.getDay(); i >= 1; i--){
+      for (var d = 0; d < this.ocorrencias.length; d++) {
+        if (this.ocorrencias[d].data.indexOf('-'+this.dataDe.getMonth()+'-') != -1 && this.ocorrencias[d].data.indexOf('-'+i+'-') != -1) {
+          this.cont_dataA++;
+        }
       }
     }
   }
 
-  editar(disciplina) {
-    this.redefinir();
-    this.codigo = disciplina.codigo;
-    this.nome = disciplina.nome;
-    this.descricao = disciplina.descricao;
-    this.data = disciplina.data;
-    this.ativa = disciplina.ativa;
-    this.tipo = disciplina.tipo;
-    this.periodo = disciplina.periodo;
-    this.editando = disciplina;
-  }
-
   cancelar() {
-    this.redefinir();
+    this.iniciar();
+    this.salvar_ok = false;
   }
 
-  redefinir() {
-    this.visualizado = null;
-    this.codigo = null;
-    this.nome = null;
-    this.descricao = null;
+  iniciar() {
+    this.aluno_matricula = null;
+    this.aluno_nome = null;
     this.data = null;
-    this.ativa = null;
-    this.tipo = 'principal';
-    this.periodo = null;
-    this.editando = null;
-    this.excluir_ok = false;
-    this.salvar_ok = false;
-    this.editar_ok = false;
+    this.pai_ou_responsavel_compareceu = false;
+    this.pai_ou_responsavel_nome = null;
+    this.tipo = null;
+    this.observacao = null;
   }
 }
